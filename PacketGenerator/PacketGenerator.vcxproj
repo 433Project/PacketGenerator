@@ -102,11 +102,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-<<<<<<< HEAD
       <SDLCheck>false</SDLCheck>
-=======
-      <SDLCheck>true</SDLCheck>
->>>>>>> 289fdd3635313e7d6c888d7e4f2aaf3309a6c89f
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,7 +147,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="PacketGenerator.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="PGClient.cpp" />
     <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />
@@ -163,11 +158,6 @@
     <ClInclude Include="PGClient.h" />
     <ClInclude Include="SocketManager.h" />
     <ClInclude Include="TimeManager.h" />
-=======
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Packet.h" />
->>>>>>> 289fdd3635313e7d6c888d7e4f2aaf3309a6c89f
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,22 +18,6 @@ void StartTiming();
 void StopTiming();
 void PrintTimings(const char *pDirection, long packets);
 
-<<<<<<< HEAD
-=======
-struct Header 
-{
-	int length;
-	char src[15];
-	int dst;
-};
-
-struct Packet : public Header
-{
-	Packet(){}
-
-};
-
->>>>>>> 289fdd3635313e7d6c888d7e4f2aaf3309a6c89f
 int main(int argc, char* argv[])
 {
 	if (argc != 6) 
@@ -76,11 +60,6 @@ int main(int argc, char* argv[])
 	addr.sin_addr.s_addr = inet_addr(pAddress);		//Connection Server IP
 	addr.sin_port = htons(port);					//Connection Server Port
 
-<<<<<<< HEAD
-=======
-	
-
->>>>>>> 289fdd3635313e7d6c888d7e4f2aaf3309a6c89f
 	while (!proto)
 	{
 		cout << "===> Connecting to Connection Server..." << endl;
