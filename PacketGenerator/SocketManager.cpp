@@ -1,9 +1,9 @@
 #include "SocketManager.h"
+#include <json/json.h>
 
 SocketManager::SocketManager()
 {
 }
-
 
 SocketManager::~SocketManager()
 {
@@ -33,11 +33,10 @@ SOCKET SocketManager::ConnectToCS()
 	}
 	else
 	{
-		cout << "===> Connection Server connected ..." << endl;
+		cout << "===> Connection Server(" << inet_ntoa(addr.sin_addr) << ") connected ..." << endl;
 		return hSock;
 	}
 
-	return ;
 }
 
 SOCKET SocketManager::CreateUDPSocket(const DWORD flags)
@@ -67,11 +66,11 @@ SOCKET SocketManager::CreateTCPSocket(const DWORD flags)
 	return hSock;
 }
 
-DWORD SocketManager::Send(SOCKET s, char* buf) 
+DWORD SocketManager::Send(SOCKET s, char* data) 
 {
 	WSABUF wsabuf;
-	wsabuf.buf = buf;
-	wsabuf.len = sizeof(buf);
+	wsabuf.buf = data;
+	wsabuf.len = sizeof(Packet);
 
 	DWORD bytesSent;
 	WSASend(s, &wsabuf, 1, &bytesSent, 0, NULL, NULL);
@@ -83,4 +82,33 @@ char* SocketManager::Receive(SOCKET s)
 	WSABUF wsabuf;
 	WSARecv(s, &wsabuf, 1, NULL, 0, NULL, NULL);
 	return wsabuf.buf;
+}
+
+void SocketManager::SendFlatBuffers(SOCKET s, Command comm, string data, int SrcCode)
+{
+	flatbuffers::FlatBufferBuilder builder;
+	//MakeBody(builder, comm, data);
+	flatbuffers::Offset<Body> body = CreateBody(builder, comm, builder.CreateString(data));
+	flatbuffers::Offset<Header> header = CreateHeader(builder, sizeof(body), SrcDstType_PACKET_GENERATOR, SrcCode, SrcDstType_MONITORING_SERVER, 0);
+	builder.Finish(CreatePacket(builder, header, body));
+
+	uint8_t* buf = builder.GetBufferPointer();
+		
+	send(s, reinterpret_cast<char*>(buf), builder.GetSize(), 0);
+
+	//cout << "===> Send !!!!!" << endl;
+	/*
+	cout << reinterpret_cast<char*>(builder.GetBufferPointer()) <<endl;
+	const Packet *p = GetPacket(buf);
+	const Header *h = p->header();
+	cout << sizeof(Header) << endl;
+	auto b = p->body();
+	cout <<"h->length() : "<< h->length() << endl;
+	cout << "h->srcType() : " << h->srcType() << endl;
+	cout << "h->srcCode() : " << h->srcCode() << endl;
+	cout << "h->dstType() : " << h->dstType() << endl;
+	cout << "h->dstCode() : " << h->dstCode() << endl;
+	cout << "b->cmd() : " << b->cmd() << endl;
+	cout << "b->data() : " << b->data() << endl;
+	*/
 }

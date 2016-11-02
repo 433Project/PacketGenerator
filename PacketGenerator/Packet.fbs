@@ -6,10 +6,13 @@ enum SrcDstType :int
 	MATCHING_CLIENT,
 	ROOM_MANAGER,
 	PACKET_GENERATOR,
-	MONITORING_SERVER
-};
+	MONITORING_SERVER,
+	CONFIG_SERVER,
+    CONNECTION_SERVER
+}
 
-enum Command
+
+enum Command : int
 {
 	MATCH_REQUEST,
 	MATCH_COMPLET,
@@ -17,19 +20,29 @@ enum Command
 	HEALTH_CHECK,
 	MSLIST_REQUEST,
 	PG_START,
-	PG_END
-};
+	PG_END,
+	PG_DUMMY
+}
 
-struct Header
+table Header
 {
-	int length;
-	SrcDstType srcType;
-	int srcCode;
-	SrcDstType dstType;
-	int dstCode;
-};
+	length: int;
+	srcType: SrcDstType;
+	srcCode: int;
+	dstType: SrcDstType;
+	dstCode: int;
+}
 
-struct Packet : public Header
+table Body
 {
-	
-};
+	cmd: Command;
+	data: string;
+}
+
+table Packet
+{
+	header: Header;
+	body: Body;
+}
+
+root_type Packet;
