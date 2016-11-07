@@ -26,11 +26,12 @@ int main(int argc, char* argv[])
 	}
 
 	ip = argv[1];
+	
 	protocol = argv[2];
 	packetsToSend = atol(argv[3]);
 	packetSize = atol(argv[4]);
 
-	PGClient* pg = new PGClient();
+	PGClient* pg = new PGClient(ip);
 	if (!strcmp(protocol, "t"))
 		pg->RunPacketGenerator(packetsToSend, packetSize);
 	else

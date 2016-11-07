@@ -9,7 +9,7 @@ SocketManager::~SocketManager()
 {
 }
 
-SOCKET SocketManager::ConnectToCS() 
+SOCKET SocketManager::ConnectToCS(char* ip) 
 {
 	int nErrCode = WSAStartup(MAKEWORD(2, 2), &wsd);
 	if (nErrCode)
@@ -21,14 +21,14 @@ SOCKET SocketManager::ConnectToCS()
 	hSock = CreateTCPSocket();
 	
 	int option = TRUE;
-	setsockopt(hSock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
+	//setsockopt(hSock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
 	
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(csIP);		//Connection Server IP
+	addr.sin_addr.s_addr = inet_addr(ip);		//Connection Server IP
 	addr.sin_port = htons(csPort);					//Connection Server Port
 
-	cout << "> Connecting to Connection Server("<<csIP<<")..." << endl;
+	cout << "> Connecting to Connection Server("<<ip<<")..." << endl;
 	if (connect(hSock, (SOCKADDR*)&addr, sizeof(addr)) == SOCKET_ERROR)
 	{
 		cout << "[!]connect failed, code : " << WSAGetLastError() << endl;
@@ -42,11 +42,11 @@ SOCKET SocketManager::ConnectToCS()
 
 }
 
-SOCKET SocketManager::CreateUDPSocket(sockaddr_in &addr, const DWORD flags)
+SOCKET SocketManager::CreateUDPSocket(char* ip, sockaddr_in &addr, const DWORD flags)
 {
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(csUDPPort);
-	addr.sin_addr.s_addr = inet_addr(csIP);
+	addr.sin_addr.s_addr = inet_addr(ip);
 
 	SOCKET hSock = ::WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, NULL, 0, flags);
 
@@ -75,22 +75,22 @@ SOCKET SocketManager::CreateTCPSocket(const DWORD flags)
 	return hSock;
 }
 
-DWORD SocketManager::Send(SOCKET s, char* data, int len)
+DWORD SocketManager::Send(SOCKET s, char* data)
 {
 	WSABUF wsabuf;
 	wsabuf.buf = data;
-	wsabuf.len = len;
+	wsabuf.len = packetSize;
 
 	DWORD bytesSent;
 	WSASend(s, &wsabuf, 1, &bytesSent, 0, NULL, NULL);
 	return bytesSent;
 }
 
-DWORD SocketManager::SendUDP(SOCKET s, sockaddr_in addr, char* data, int len)
+DWORD SocketManager::SendUDP(SOCKET s, sockaddr_in addr, char* data)
 {
 	WSABUF wsabuf;
 	wsabuf.buf = data;
-	wsabuf.len = len;
+	wsabuf.len = packetSize;
 
 	DWORD bytesSent;
 	WSASendTo(s, &wsabuf, 1, &bytesSent, 0, reinterpret_cast<sockaddr *>(&addr), sizeof(addr), NULL, NULL);
@@ -104,7 +104,7 @@ char* SocketManager::Receive(SOCKET s)
 	return wsabuf.buf;
 }
 
-char* SocketManager::MakePacket(int* len, int srcCode, Command comm, string data)
+char* SocketManager::MakePacket(int srcCode, Command comm, string data)
 {
 	flatbuffers::FlatBufferBuilder builder;
 	flatbuffers::Offset<Body> body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data));
@@ -112,22 +112,16 @@ char* SocketManager::MakePacket(int* len, int srcCode, Command comm, string data
 
 	uint8_t* buf = builder.GetBufferPointer();
 	char* b = reinterpret_cast<char*>(buf);
-	*len = builder.GetSize();
+	int len = builder.GetSize();
 	
-	Header* h = new Header(*len, PACKET_GENERATOR, srcCode, MONITORING_SERVER, 0);
+	Header* h = new Header(len, PACKET_GENERATOR, srcCode, MONITORING_SERVER, 0);
 
-	int newSize = (*len + 20);
-	char* bytes = new char[newSize];
-	memset(bytes, 0, newSize);
+	char* bytes = new char[packetSize];
+	memset(bytes, 0, packetSize);
 	memcpy(bytes, h, sizeof(Header));
-	memcpy(&bytes[sizeof(Header)], b, *len);
+	memcpy(&bytes[sizeof(Header)], b, len);
 	
 	delete h;
 
 	return bytes;
-}
-
-void SocketManager::SetCSIP(char* ip)
-{
-	csIP = ip;
 }

@@ -7,7 +7,7 @@ LARGE_INTEGER g_stopCounter;
 SocketManager* sm;
 TimeManager* timer;
 
-PGClient::PGClient()
+PGClient::PGClient(char* ip)
 {
 	cout << "#############################################################" << endl;
 	cout << "#####################==================######################" << endl;
@@ -17,8 +17,8 @@ PGClient::PGClient()
 
 	sm = new SocketManager();
 	timer = new TimeManager();
-
-	hConnSock = sm->ConnectToCS();
+	csIP = ip;
+	hConnSock = sm->ConnectToCS(csIP);
 	
 }
 
@@ -32,29 +32,22 @@ PGClient::~PGClient()
 
 void PGClient::RunPacketGenerator(int total, int size)
 {
-	
-	int len = 0;
-	cout << total << endl;
-	char* data = sm->MakePacket(&len, 0, Command_PG_START, ::to_string(total));
-	cout << len + sizeof(Header) << endl;
-	sm->Send(hConnSock, data, sizeof(Header) + len);
+	char* data = sm->MakePacket(0, Command_PG_START, ::to_string(total));
+	sm->Send(hConnSock, data);
 	delete data;
 	
-	data = sm->MakePacket(&len, 0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
-	cout << len + sizeof(Header) << endl;
-	
+	data = sm->MakePacket(0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
 	timer->StartTiming();
 	for (long i = 0; i < total; i++)
 	{
-		sm->Send(hConnSock, data, len + sizeof(Header));
+		sm->Send(hConnSock, data);
 	}
 	timer->StopTiming();
-		
 	delete data;
 
-	data = sm->MakePacket(&len, 0, Command_PG_END, "END");
-	cout << len + sizeof(Header) << endl;
-	sm->Send(hConnSock, data, len + 20);
+	data = sm->MakePacket(0, Command_PG_END, "END");
+	sm->Send(hConnSock, data);
+
 	timer->PrintTimings(total);
 	delete data;
 }
@@ -62,30 +55,23 @@ void PGClient::RunPacketGenerator(int total, int size)
 void PGClient::RunDatagramGenerator(int total, int size)
 {
 	sockaddr_in addr;
-	SOCKET s = sm->CreateUDPSocket(addr);
-
-	int len = 0;
-	cout << total << endl;
-	char* data = sm->MakePacket(&len, 0, Command_PG_START, ::to_string(total));
-	cout << len + 20 << endl;
-	sm->Send(hConnSock, data, sizeof(Header) + len);
+	SOCKET s = sm->CreateUDPSocket(csIP, addr);
+	
+	char* data = sm->MakePacket( 0, Command_PG_START, ::to_string(total));
+	sm->Send(hConnSock, data);
 	delete data;
 
-	data = sm->MakePacket(&len, 0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
-	cout << len + 20 << endl;
-	
+	data = sm->MakePacket(0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
 	timer->StartTiming();
 	for (long i = 0; i < total; ++i)
 	{
-		sm->SendUDP(s, addr, data, len + sizeof(Header));
+		sm->SendUDP(s, addr, data);
 	}
 	timer->StopTiming();
-
 	delete data;
 
-	data = sm->MakePacket(&len, 0, Command_PG_END, "END");
-	cout << len + 20 << endl;
-	sm->Send(hConnSock, data, len + 20);
+	data = sm->MakePacket(0, Command_PG_END, "END");
+	sm->Send(hConnSock, data);
 	timer->PrintTimings(total);
 	delete data;
 }
