@@ -4,6 +4,9 @@ LARGE_INTEGER g_frequency;
 LARGE_INTEGER g_startCounter;
 LARGE_INTEGER g_stopCounter;
 
+SocketManager* sm;
+TimeManager* timer;
+
 PGClient::PGClient()
 {
 	cout << "#############################################################" << endl;
@@ -12,65 +15,77 @@ PGClient::PGClient()
 	cout << "#####################==================######################" << endl;
 	cout << "#############################################################" << endl;
 
-	SocketManager* sm = new SocketManager();
+	sm = new SocketManager();
+	timer = new TimeManager();
 
 	hConnSock = sm->ConnectToCS();
-	sm->SendFlatBuffers(hConnSock, Command_PG_START, "1000", 0);
-	StartTiming();
-	for (int i = 0; i < 1000;i++)
-	{	
-		sm->SendFlatBuffers(hConnSock, Command_PG_DUMMY, to_string(i), 0);
-		cout << to_string(i) << endl;
-	}
-	StopTiming();
 	
-	sm->SendFlatBuffers(hConnSock, Command_PG_END, "END", 0);
-	cout << "===> End to Send Data" << endl;
-	PrintTimings("Sent", 1000);
 }
 
 
 PGClient::~PGClient()
 {
-
+	closesocket(hConnSock);
+	delete sm;
+	delete timer;
 }
 
-void PGClient::StartTiming()
+void PGClient::RunPacketGenerator(int total, int size)
 {
-	QueryPerformanceFrequency(&g_frequency);
-
-	cout << "***** Timing started" << endl;
-
-	if (!QueryPerformanceCounter(&g_startCounter))
+	
+	int len = 0;
+	cout << total << endl;
+	char* data = sm->MakePacket(&len, 0, Command_PG_START, ::to_string(total));
+	cout << len + sizeof(Header) << endl;
+	sm->Send(hConnSock, data, sizeof(Header) + len);
+	delete data;
+	
+	data = sm->MakePacket(&len, 0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
+	cout << len + sizeof(Header) << endl;
+	
+	timer->StartTiming();
+	for (long i = 0; i < total; i++)
 	{
-		cout << "[!] QueryPerformanceCounter error, code : " << GetLastError() << endl;
+		sm->Send(hConnSock, data, len + sizeof(Header));
 	}
+	timer->StopTiming();
+		
+	delete data;
+
+	data = sm->MakePacket(&len, 0, Command_PG_END, "END");
+	cout << len + sizeof(Header) << endl;
+	sm->Send(hConnSock, data, len + 20);
+	timer->PrintTimings(total);
+	delete data;
 }
 
-void PGClient::StopTiming()
+void PGClient::RunDatagramGenerator(int total, int size)
 {
-	if (!QueryPerformanceCounter(&g_stopCounter))
+	sockaddr_in addr;
+	SOCKET s = sm->CreateUDPSocket(addr);
+
+	int len = 0;
+	cout << total << endl;
+	char* data = sm->MakePacket(&len, 0, Command_PG_START, ::to_string(total));
+	cout << len + 20 << endl;
+	sm->Send(hConnSock, data, sizeof(Header) + len);
+	delete data;
+
+	data = sm->MakePacket(&len, 0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
+	cout << len + 20 << endl;
+	
+	timer->StartTiming();
+	for (long i = 0; i < total; ++i)
 	{
-		cout << "[!] QueryPerformanceCounter error, code : " << GetLastError() << endl;
+		sm->SendUDP(s, addr, data, len + sizeof(Header));
 	}
+	timer->StopTiming();
 
-	cout << "***** Timing stopped" << endl;
+	delete data;
+
+	data = sm->MakePacket(&len, 0, Command_PG_END, "END");
+	cout << len + 20 << endl;
+	sm->Send(hConnSock, data, len + 20);
+	timer->PrintTimings(total);
+	delete data;
 }
-
-void PGClient::PrintTimings(const char *pDirection, long packets)
-{
-	LARGE_INTEGER elapsed;
-
-	elapsed.QuadPart = (g_stopCounter.QuadPart - g_startCounter.QuadPart) / (g_frequency.QuadPart / 1000);
-
-	cout << " Complete in " << elapsed.QuadPart << "ms" << endl;
-	cout << pDirection <<" "<< packets << " datagrams" << endl;
-
-	if (elapsed.QuadPart != 0)
-	{
-		const double perSec = packets / elapsed.QuadPart * 1000.00;
-
-		cout << perSec << " datagrams per second" << endl;
-	}
-}
-

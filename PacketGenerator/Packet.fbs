@@ -1,16 +1,4 @@
-namespace PacketGenerator;
-
-enum SrcDstType :int
-{
-	MATCHING_SERVER = 0,
-	MATCHING_CLIENT,
-	ROOM_MANAGER,
-	PACKET_GENERATOR,
-	MONITORING_SERVER,
-	CONFIG_SERVER,
-    CONNECTION_SERVER
-}
-
+namespace fb;
 
 enum Command : int
 {
@@ -21,28 +9,28 @@ enum Command : int
 	MSLIST_REQUEST,
 	PG_START,
 	PG_END,
-	PG_DUMMY
+	PG_DUMMY,
+	ROOM_CREATE_REQUEST,
+	ROOM_CREATE_RESPONSE,
+	ROOM_JOIN_REQUEST,
+	ROOM_JOIN_RESPONSE,
+	GAME_START,
+	GAME_END,
+
 }
 
-table Header
+enum Status : int
 {
-	length: int;
-	srcType: SrcDstType;
-	srcCode: int;
-	dstType: SrcDstType;
-	dstCode: int;
+  SUCCESS,
+  FAIL,
+  NONE
 }
 
 table Body
 {
 	cmd: Command;
+	status: Status;
 	data: string;
 }
 
-table Packet
-{
-	header: Header;
-	body: Body;
-}
-
-root_type Packet;
+root_type Body;

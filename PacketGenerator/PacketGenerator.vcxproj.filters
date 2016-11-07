@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PacketGenerator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="PGClient.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -39,9 +36,6 @@
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="TimeManager.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocol.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="lib\flatbuffers\code_generators.h">
@@ -102,6 +96,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Packet_generated.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

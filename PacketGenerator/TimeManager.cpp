@@ -35,14 +35,14 @@ void TimeManager::StopTiming()
 	cout << "***** Timing stopped" << endl;
 }
 
-void TimeManager::PrintTimings(const char *pDirection, long packets)
+void TimeManager::PrintTimings(long packets)
 {
 	LARGE_INTEGER elapsed;
 
 	elapsed.QuadPart = (g_stopCounter.QuadPart - g_startCounter.QuadPart) / (g_frequency.QuadPart / 1000);
 
-	cout << " Complete in " << elapsed.QuadPart << "ms" << endl;
-	cout << pDirection << " " << packets << " datagrams" << endl;
+	cout << "Complete in " << elapsed.QuadPart << "ms" << endl;
+	cout << "Sent " << packets << " packets" << endl;
 
 	if (elapsed.QuadPart != 0)
 	{

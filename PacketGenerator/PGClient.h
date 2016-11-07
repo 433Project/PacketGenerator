@@ -11,13 +11,12 @@ class PGClient
 public:
 	PGClient();
 	~PGClient();
-private:
-	void StartTiming();
-	void StopTiming();
-	void PrintTimings(const char *pDirection, long packets);
+	void RunPacketGenerator(int total, int size);
+	void RunDatagramGenerator(int total, int size);
 
 private:
 	SOCKET hConnSock;
+
 	
 };
 

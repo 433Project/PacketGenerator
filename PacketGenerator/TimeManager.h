@@ -9,11 +9,9 @@ class TimeManager
 public:
 	TimeManager();
 	~TimeManager();
-
-private:
 	void StartTiming();
 	void StopTiming();
-	void PrintTimings(const char *pDirection, long packets);
+	void PrintTimings(long packets);
 
 };
 

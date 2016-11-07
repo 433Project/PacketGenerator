@@ -148,7 +148,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="PacketGenerator.cpp" />
     <ClCompile Include="PGClient.cpp" />
     <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />
