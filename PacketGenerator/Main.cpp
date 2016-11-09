@@ -3,14 +3,12 @@
 
 void PrintUsage()
 {
-	cout << "Useage : PacketGenerator <IP> <Protocol> <count> <length>" << endl;
+	cout << "Useage : PacketGenerator <IP> <Protocol> <count>" << endl;
 	cout << "<Protocol>" << endl;
 	cout << "	t : tcp, default" << endl;
 	cout << "	u : udp" << endl;
 	cout << "<Count>" << endl;
 	cout << "	How many do you want to send?" << endl;
-	cout << "<length>" << endl;
-	cout << "	How long packet size" << endl;
 }
 
 int main(int argc, char* argv[])
@@ -18,9 +16,8 @@ int main(int argc, char* argv[])
 	char* ip;
 	char* protocol;
 	long packetsToSend;
-	long packetSize;
 
-	if (argc < 2 || argc>5) {
+	if (argc != 4) {
 		PrintUsage();
 		exit(0);
 	}
@@ -29,12 +26,10 @@ int main(int argc, char* argv[])
 	
 	protocol = argv[2];
 	packetsToSend = atol(argv[3]);
-	packetSize = atol(argv[4]);
 
 	PGClient* pg = new PGClient(ip);
 	if (!strcmp(protocol, "t"))
-		pg->RunPacketGenerator(packetsToSend, packetSize);
+		pg->RunPacketGenerator(packetsToSend);
 	else
-		pg->RunDatagramGenerator(packetsToSend, packetSize);
-	while (true) {}
+		pg->RunDatagramGenerator(packetsToSend);
 }

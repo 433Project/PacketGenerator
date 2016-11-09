@@ -19,9 +19,7 @@ PGClient::PGClient(char* ip)
 	timer = new TimeManager();
 	csIP = ip;
 	hConnSock = sm->ConnectToCS(csIP);
-	
 }
-
 
 PGClient::~PGClient()
 {
@@ -30,7 +28,7 @@ PGClient::~PGClient()
 	delete timer;
 }
 
-void PGClient::RunPacketGenerator(int total, int size)
+void PGClient::RunPacketGenerator(int total)
 {
 	char* data = sm->MakePacket(0, Command_PG_START, ::to_string(total));
 	sm->Send(hConnSock, data);
@@ -45,6 +43,7 @@ void PGClient::RunPacketGenerator(int total, int size)
 	timer->StopTiming();
 	delete data;
 
+	Sleep(total / 10);
 	data = sm->MakePacket(0, Command_PG_END, "END");
 	sm->Send(hConnSock, data);
 
@@ -52,12 +51,12 @@ void PGClient::RunPacketGenerator(int total, int size)
 	delete data;
 }
 
-void PGClient::RunDatagramGenerator(int total, int size)
+void PGClient::RunDatagramGenerator(int total)
 {
 	sockaddr_in addr;
 	SOCKET s = sm->CreateUDPSocket(csIP, addr);
 	
-	char* data = sm->MakePacket( 0, Command_PG_START, ::to_string(total));
+	char* data = sm->MakePacket(0, Command_PG_START, ::to_string(total));
 	sm->Send(hConnSock, data);
 	delete data;
 
@@ -70,6 +69,7 @@ void PGClient::RunDatagramGenerator(int total, int size)
 	timer->StopTiming();
 	delete data;
 
+	Sleep(total / 10);
 	data = sm->MakePacket(0, Command_PG_END, "END");
 	sm->Send(hConnSock, data);
 	timer->PrintTimings(total);

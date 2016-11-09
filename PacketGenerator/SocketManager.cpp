@@ -20,7 +20,7 @@ SOCKET SocketManager::ConnectToCS(char* ip)
 
 	hSock = CreateTCPSocket();
 	
-	int option = TRUE;
+	//int option = TRUE;
 	//setsockopt(hSock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
 	
 	memset(&addr, 0, sizeof(addr));
