@@ -9,14 +9,14 @@ using namespace fb;
 class PGClient
 {
 public:
-	PGClient();
+	PGClient(char* ip);
 	~PGClient();
-	void RunPacketGenerator(int total, int size);
-	void RunDatagramGenerator(int total, int size);
+	void RunPacketGenerator(int total);
+	void RunDatagramGenerator(int total);
 
 private:
 	SOCKET hConnSock;
-
+	char* csIP;
 	
 };
 

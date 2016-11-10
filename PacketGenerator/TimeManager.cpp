@@ -1,8 +1,6 @@
 #include "TimeManager.h"
 
-static LARGE_INTEGER g_frequency;
-static LARGE_INTEGER g_startCounter;
-static LARGE_INTEGER g_stopCounter;
+
 
 TimeManager::TimeManager()
 {
