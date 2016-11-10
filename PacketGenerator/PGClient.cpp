@@ -43,7 +43,6 @@ void PGClient::RunPacketGenerator(int total)
 	timer->StopTiming();
 	delete data;
 
-	Sleep(total / 10);
 	data = sm->MakePacket(0, Command_PG_END, "END");
 	sm->Send(hConnSock, data);
 
@@ -69,7 +68,6 @@ void PGClient::RunDatagramGenerator(int total)
 	timer->StopTiming();
 	delete data;
 
-	Sleep(total / 10);
 	data = sm->MakePacket(0, Command_PG_END, "END");
 	sm->Send(hConnSock, data);
 	timer->PrintTimings(total);

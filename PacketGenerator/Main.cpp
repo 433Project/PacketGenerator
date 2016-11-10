@@ -32,4 +32,8 @@ int main(int argc, char* argv[])
 		pg->RunPacketGenerator(packetsToSend);
 	else
 		pg->RunDatagramGenerator(packetsToSend);
+
+	Sleep(10000); //delay for closesocket
+
+	pg->~PGClient();
 }
