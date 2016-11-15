@@ -34,7 +34,7 @@ void PGClient::RunPacketGenerator(int total)
 	sm->Send(hConnSock, data);
 	delete data;
 	
-	data = sm->MakePacket(0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
+	data = sm->MakePacket(0, Command_PG_DUMMY, "");
 	timer->StartTiming();
 	for (long i = 0; i < total; i++)
 	{
@@ -43,7 +43,7 @@ void PGClient::RunPacketGenerator(int total)
 	timer->StopTiming();
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_END, "END");
+	data = sm->MakePacket(0, Command_PG_END, "");
 	sm->Send(hConnSock, data);
 
 	timer->PrintTimings(total);
@@ -59,7 +59,7 @@ void PGClient::RunDatagramGenerator(int total)
 	sm->Send(hConnSock, data);
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_DUMMY, "안녕하세요 PACKET_GENERATOR입니다.");
+	data = sm->MakePacket(0, Command_PG_DUMMY, "");
 	timer->StartTiming();
 	for (long i = 0; i < total; ++i)
 	{
@@ -68,7 +68,7 @@ void PGClient::RunDatagramGenerator(int total)
 	timer->StopTiming();
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_END, "END");
+	data = sm->MakePacket(0, Command_PG_END, "");
 	sm->Send(hConnSock, data);
 	timer->PrintTimings(total);
 	delete data;
