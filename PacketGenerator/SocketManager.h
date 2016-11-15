@@ -20,7 +20,7 @@ public:
 	DWORD Send(SOCKET s, char* buf, int len);
 	DWORD SendUDP(SOCKET s, sockaddr_in addr, char* data, int len);
 	char* Receive(SOCKET s);
-	char* MakePacket(int* len, int srcCode, Command comm, string data);
+	char* MakePacket(int* len, int srcCode, Command comm, string data1, string data2);
 	void SetCSIP(char* ip);
 
 private:

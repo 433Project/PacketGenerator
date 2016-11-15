@@ -10,41 +10,30 @@ namespace fb {
 	struct Body;
 
 	enum Command {
-		Command_MATCH_REQUEST = 0,
-		Command_MATCH_COMPLET = 1,
-		Command_LATENCY = 2,
-		Command_HEALTH_CHECK = 3,
-		Command_MSLIST_REQUEST = 4,
-		Command_PG_START = 5,
-		Command_PG_END = 6,
-		Command_PG_DUMMY = 7,
-		Command_ROOM_CREATE_REQUEST,
-		Command_ROOM_CREATE_RESPONSE,
-		Command_ROOM_JOIN_REQUEST,
-		Command_ROOM_JOIN_RESPONSE,
-		Command_GAME_START,
-		Command_GAME_END,
-		Command_MIN = Command_MATCH_REQUEST,
-		Command_MAX = Command_GAME_END
+		Command_HEALTH_CHECK = 0,
+		Command_NOTI_MATCH_REQUEST = 10,
+		Command_NOTI_MATCH_SUCCESS = 11,
+		Command_LATENCY = 12,
+		Command_MATCH_REQUEST = 13,
+		Command_MATCH_RESPONSE = 14,
+		Command_MSLIST_REQUEST = 30,
+		Command_MSLIST_RESPONSE = 31,
+		Command_MS_ID = 32,
+		Command_ROOM_CREATE_REQUEST = 40,
+		Command_ROOM_CREATE_RESPONSE = 41,
+		Command_ROOM_JOIN_REQUEST = 50,
+		Command_ROOM_JOIN_RESPONSE = 51,
+		Command_GAME_START = 52,
+		Command_GAME_END = 53,
+		Command_PG_START = 60,
+		Command_PG_END = 61,
+		Command_PG_DUMMY = 62,
+		Command_MIN = Command_HEALTH_CHECK,
+		Command_MAX = Command_PG_DUMMY
 	};
 
 	inline const char **EnumNamesCommand() {
-		static const char *names[] = {
-			"MATCH_REQUEST",
-			"MATCH_COMPLET",
-			"LATENCY",
-			"HEALTH_CHECK",
-			"MSLIST_REQUEST",
-			"PG_START",
-			"PG_END",
-			"PG_DUMMY",
-			"ROOM_CREATE_REQUEST",
-			"ROOM_CREATE_RESPONSE",
-			"ROOM_JOIN_REQUEST",
-			"ROOM_JOIN_RESPONSE",
-			"GAME_START",
-			"GAME_END",
-			nullptr };
+		static const char *names[] = { "HEALTH_CHECK", "", "", "", "", "", "", "", "", "", "NOTI_MATCH_REQUEST", "NOTI_MATCH_SUCCESS", "LATENCY", "MATCH_REQUEST", "MATCH_RESPONSE", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "MSLIST_REQUEST", "MSLIST_RESPONSE", "MS_ID", "", "", "", "", "", "", "", "ROOM_CREATE_REQUEST", "ROOM_CREATE_RESPONSE", "", "", "", "", "", "", "", "", "ROOM_JOIN_REQUEST", "ROOM_JOIN_RESPONSE", "GAME_START", "GAME_END", "", "", "", "", "", "", "PG_START", "PG_END", "PG_DUMMY", nullptr };
 		return names;
 	}
 
@@ -69,17 +58,21 @@ namespace fb {
 		enum {
 			VT_CMD = 4,
 			VT_STATUS = 6,
-			VT_DATA = 8
+			VT_DATA1 = 8,
+			VT_DATA2 = 10
 		};
 		Command cmd() const { return static_cast<Command>(GetField<int32_t>(VT_CMD, 0)); }
 		Status status() const { return static_cast<Status>(GetField<int32_t>(VT_STATUS, 0)); }
-		const flatbuffers::String *data() const { return GetPointer<const flatbuffers::String *>(VT_DATA); }
+		const flatbuffers::String *data1() const { return GetPointer<const flatbuffers::String *>(VT_DATA1); }
+		const flatbuffers::String *data2() const { return GetPointer<const flatbuffers::String *>(VT_DATA2); }
 		bool Verify(flatbuffers::Verifier &verifier) const {
 			return VerifyTableStart(verifier) &&
 				VerifyField<int32_t>(verifier, VT_CMD) &&
 				VerifyField<int32_t>(verifier, VT_STATUS) &&
-				VerifyField<flatbuffers::uoffset_t>(verifier, VT_DATA) &&
-				verifier.Verify(data()) &&
+				VerifyField<flatbuffers::uoffset_t>(verifier, VT_DATA1) &&
+				verifier.Verify(data1()) &&
+				VerifyField<flatbuffers::uoffset_t>(verifier, VT_DATA2) &&
+				verifier.Verify(data2()) &&
 				verifier.EndTable();
 		}
 	};
@@ -89,31 +82,35 @@ namespace fb {
 		flatbuffers::uoffset_t start_;
 		void add_cmd(Command cmd) { fbb_.AddElement<int32_t>(Body::VT_CMD, static_cast<int32_t>(cmd), 0); }
 		void add_status(Status status) { fbb_.AddElement<int32_t>(Body::VT_STATUS, static_cast<int32_t>(status), 0); }
-		void add_data(flatbuffers::Offset<flatbuffers::String> data) { fbb_.AddOffset(Body::VT_DATA, data); }
+		void add_data1(flatbuffers::Offset<flatbuffers::String> data1) { fbb_.AddOffset(Body::VT_DATA1, data1); }
+		void add_data2(flatbuffers::Offset<flatbuffers::String> data2) { fbb_.AddOffset(Body::VT_DATA2, data2); }
 		BodyBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
 		BodyBuilder &operator=(const BodyBuilder &);
 		flatbuffers::Offset<Body> Finish() {
-			auto o = flatbuffers::Offset<Body>(fbb_.EndTable(start_, 3));
+			auto o = flatbuffers::Offset<Body>(fbb_.EndTable(start_, 4));
 			return o;
 		}
 	};
 
 	inline flatbuffers::Offset<Body> CreateBody(flatbuffers::FlatBufferBuilder &_fbb,
-		Command cmd = Command_MATCH_REQUEST,
+		Command cmd = Command_HEALTH_CHECK,
 		Status status = Status_SUCCESS,
-		flatbuffers::Offset<flatbuffers::String> data = 0) {
+		flatbuffers::Offset<flatbuffers::String> data1 = 0,
+		flatbuffers::Offset<flatbuffers::String> data2 = 0) {
 		BodyBuilder builder_(_fbb);
-		builder_.add_data(data);
+		builder_.add_data2(data2);
+		builder_.add_data1(data1);
 		builder_.add_status(status);
 		builder_.add_cmd(cmd);
 		return builder_.Finish();
 	}
 
 	inline flatbuffers::Offset<Body> CreateBodyDirect(flatbuffers::FlatBufferBuilder &_fbb,
-		Command cmd = Command_MATCH_REQUEST,
+		Command cmd = Command_HEALTH_CHECK,
 		Status status = Status_SUCCESS,
-		const char *data = nullptr) {
-		return CreateBody(_fbb, cmd, status, data ? _fbb.CreateString(data) : 0);
+		const char *data1 = nullptr,
+		const char *data2 = nullptr) {
+		return CreateBody(_fbb, cmd, status, data1 ? _fbb.CreateString(data1) : 0, data2 ? _fbb.CreateString(data2) : 0);
 	}
 
 	inline const fb::Body *GetBody(const void *buf) { return flatbuffers::GetRoot<fb::Body>(buf); }
