@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
 	PGClient* pg = new PGClient(ip);
 
-	cout << "IF YOU WANT TO STOP, PRESS ANY KEY...." << endl;
+	
 
 	if (!strcmp(protocol, "t"))
 		pg->RunPacketGenerator();

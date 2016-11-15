@@ -20,7 +20,7 @@ public:
 	DWORD Send(SOCKET s, char* buf);
 	DWORD SendUDP(SOCKET s, sockaddr_in addr, char* data);
 	char* Receive(SOCKET s);
-	char* MakePacket(int srcCode, Command comm, string data);
+	char* MakePacket(int srcCode, Command comm, string data1, string data2);
 	
 
 private:

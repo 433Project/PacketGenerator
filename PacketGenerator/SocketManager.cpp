@@ -104,14 +104,16 @@ char* SocketManager::Receive(SOCKET s)
 	return wsabuf.buf;
 }
 
-char* SocketManager::MakePacket(int srcCode, Command comm, string data)
+char* SocketManager::MakePacket(int srcCode, Command comm, string data1, string data2)
 {
 	flatbuffers::FlatBufferBuilder builder;
 	flatbuffers::Offset<Body> body;
-	if (data.empty())
+	if (data1.empty() && data2.empty())
 		body = CreateBody(builder, comm, Status_NONE);
+	else if (data2.empty())
+		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data1));
 	else
-		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data));
+		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data1), builder.CreateString(data2));
 	builder.Finish(body);
 
 	uint8_t* buf = builder.GetBufferPointer();

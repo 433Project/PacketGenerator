@@ -15,6 +15,7 @@ PGClient::PGClient(char* ip)
 	cout << "##################### Packet Generator ######################" << endl;
 	cout << "#####################==================######################" << endl;
 	cout << "#############################################################" << endl;
+	cout << "IF YOU WANT TO STOP, PRESS ANY KEY...." << endl;
 
 	sm = new SocketManager();
 	timer = new TimeManager();
@@ -32,11 +33,11 @@ PGClient::~PGClient()
 void PGClient::RunPacketGenerator()
 {
 	int total = 0;
-	char* data = sm->MakePacket(0, Command_PG_START, "");
+	char* data = sm->MakePacket(0, Command_PG_START, "", "");
 	sm->Send(hConnSock, data);
 	delete data;
 	
-	data = sm->MakePacket(0, Command_PG_DUMMY, "");
+	data = sm->MakePacket(0, Command_PG_DUMMY, "", "");
 	timer->StartTiming();
 	
 	while(!kbhit())
@@ -48,7 +49,7 @@ void PGClient::RunPacketGenerator()
 	timer->StopTiming();
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_END, "");
+	data = sm->MakePacket(0, Command_PG_END, "", "");
 	sm->Send(hConnSock, data);
 
 	timer->PrintTimings(total);
@@ -62,11 +63,11 @@ void PGClient::RunDatagramGenerator()
 	sockaddr_in addr;
 	SOCKET s = sm->CreateUDPSocket(csIP, addr);
 	
-	char* data = sm->MakePacket(0, Command_PG_START, "");
+	char* data = sm->MakePacket(0, Command_PG_START, "", "");
 	sm->Send(hConnSock, data);
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_DUMMY, "");
+	data = sm->MakePacket(0, Command_PG_DUMMY, "", "");
 	timer->StartTiming();
 	
 	while (!kbhit())
@@ -78,7 +79,7 @@ void PGClient::RunDatagramGenerator()
 	timer->StopTiming();
 	delete data;
 
-	data = sm->MakePacket(0, Command_PG_END, "");
+	data = sm->MakePacket(0, Command_PG_END, "", "");
 	sm->Send(hConnSock, data);
 	timer->PrintTimings(total);
 	delete data;
