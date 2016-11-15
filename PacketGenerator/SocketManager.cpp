@@ -107,7 +107,11 @@ char* SocketManager::Receive(SOCKET s)
 char* SocketManager::MakePacket(int srcCode, Command comm, string data)
 {
 	flatbuffers::FlatBufferBuilder builder;
-	flatbuffers::Offset<Body> body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data));
+	flatbuffers::Offset<Body> body;
+	if (data.empty())
+		body = CreateBody(builder, comm, Status_NONE);
+	else
+		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data));
 	builder.Finish(body);
 
 	uint8_t* buf = builder.GetBufferPointer();
