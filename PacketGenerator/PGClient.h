@@ -1,4 +1,5 @@
 #pragma once
+#include <conio.h>
 #include "SocketManager.h"
 #include "TimeManager.h"
 #include "flatbuffers/flatbuffers.h"
@@ -11,12 +12,15 @@ class PGClient
 public:
 	PGClient(char* ip);
 	~PGClient();
-	void RunPacketGenerator(int total);
-	void RunDatagramGenerator(int total);
+	void RunPacketGenerator();
+	void RunDatagramGenerator();
+
 
 private:
 	SOCKET hConnSock;
 	char* csIP;
+	bool isRunning = true;
+
 	
 };
 

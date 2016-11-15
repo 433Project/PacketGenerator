@@ -1,5 +1,6 @@
 #include "PGClient.h"
 
+
 LARGE_INTEGER g_frequency;
 LARGE_INTEGER g_startCounter;
 LARGE_INTEGER g_stopCounter;
@@ -28,18 +29,22 @@ PGClient::~PGClient()
 	delete timer;
 }
 
-void PGClient::RunPacketGenerator(int total)
+void PGClient::RunPacketGenerator()
 {
-	char* data = sm->MakePacket(0, Command_PG_START, ::to_string(total));
+	int total = 0;
+	char* data = sm->MakePacket(0, Command_PG_START, "");
 	sm->Send(hConnSock, data);
 	delete data;
 	
 	data = sm->MakePacket(0, Command_PG_DUMMY, "");
 	timer->StartTiming();
-	for (long i = 0; i < total; i++)
+	
+	while(!kbhit())
 	{
 		sm->Send(hConnSock, data);
+		total++;
 	}
+	
 	timer->StopTiming();
 	delete data;
 
@@ -50,21 +55,26 @@ void PGClient::RunPacketGenerator(int total)
 	delete data;
 }
 
-void PGClient::RunDatagramGenerator(int total)
+void PGClient::RunDatagramGenerator()
 {
+	int total = 0;
+
 	sockaddr_in addr;
 	SOCKET s = sm->CreateUDPSocket(csIP, addr);
 	
-	char* data = sm->MakePacket(0, Command_PG_START, ::to_string(total));
+	char* data = sm->MakePacket(0, Command_PG_START, "");
 	sm->Send(hConnSock, data);
 	delete data;
 
 	data = sm->MakePacket(0, Command_PG_DUMMY, "");
 	timer->StartTiming();
-	for (long i = 0; i < total; ++i)
+	
+	while (!kbhit())
 	{
 		sm->SendUDP(s, addr, data);
+		total++;
 	}
+	
 	timer->StopTiming();
 	delete data;
 

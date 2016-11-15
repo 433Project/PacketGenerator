@@ -1,6 +1,5 @@
 #include "PGClient.h"
 
-
 void PrintUsage()
 {
 	cout << "Useage : PacketGenerator <IP> <Protocol> <count>" << endl;
@@ -15,9 +14,9 @@ int main(int argc, char* argv[])
 {
 	char* ip;
 	char* protocol;
-	long packetsToSend;
+	//long packetsToSend;
 
-	if (argc != 4) {
+	if (argc != 3) {
 		PrintUsage();
 		exit(0);
 	}
@@ -25,13 +24,16 @@ int main(int argc, char* argv[])
 	ip = argv[1];
 	
 	protocol = argv[2];
-	packetsToSend = atol(argv[3]);
+	//packetsToSend = atol(argv[3]);
 
 	PGClient* pg = new PGClient(ip);
+
+	cout << "IF YOU WANT TO STOP, PRESS ANY KEY...." << endl;
+
 	if (!strcmp(protocol, "t"))
-		pg->RunPacketGenerator(packetsToSend);
+		pg->RunPacketGenerator();
 	else
-		pg->RunDatagramGenerator(packetsToSend);
+		pg->RunDatagramGenerator();
 
 	Sleep(10000); //delay for closesocket
 
