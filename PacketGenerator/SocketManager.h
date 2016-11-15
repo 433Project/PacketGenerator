@@ -14,22 +14,26 @@ class SocketManager
 public:
 	SocketManager();
 	~SocketManager();
-	SOCKET ConnectToCS();
-	SOCKET CreateUDPSocket(sockaddr_in &addr, const DWORD flags = 0);
+	SOCKET ConnectToCS(char* ip);
+	SOCKET CreateUDPSocket(char* ip, sockaddr_in &addr, const DWORD flags = 0);
 	SOCKET CreateTCPSocket(const DWORD flags = 0);
-	DWORD Send(SOCKET s, char* buf, int len);
-	DWORD SendUDP(SOCKET s, sockaddr_in addr, char* data, int len);
+	DWORD Send(SOCKET s, char* buf);
+	DWORD SendUDP(SOCKET s, sockaddr_in addr, char* data);
 	char* Receive(SOCKET s);
-	char* MakePacket(int* len, int srcCode, Command comm, string data1, string data2);
-	void SetCSIP(char* ip);
+	char* MakePacket(int srcCode, Command comm, string data1, string data2);
 
 private:
 	WSADATA wsd;
 	SOCKET hSock;
 	SOCKADDR_IN addr;
-	char* csIP = "10.100.10.6";
+	
+	/*int csPort = 10444;
+	int csUDPPort = 10433;
+*/
 	int csPort = 10433;
 	int csUDPPort = 5050;
+
+	int packetSize = 100;
 
 };
 
