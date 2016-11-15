@@ -35,5 +35,5 @@ int main(int argc, char* argv[])
 
 	Sleep(10000); //delay for closesocket
 
-	pg->~PGClient();
+	delete pg;
 }
