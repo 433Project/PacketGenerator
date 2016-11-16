@@ -3,33 +3,27 @@
 
 SocketManager::SocketManager()
 {
+	int nErrCode = WSAStartup(MAKEWORD(2, 2), &wsd);
+	if (nErrCode)
+	{
+		cout << "[!] WSAStartup failed, code : " << nErrCode << endl;
+		exit(0);
+	}
 }
 
 SocketManager::~SocketManager()
 {
 }
 
-SOCKET SocketManager::ConnectToCS(char* ip) 
+SOCKET SocketManager::ConnectToCS(SOCKET sock, char* ip) 
 {
-	int nErrCode = WSAStartup(MAKEWORD(2, 2), &wsd);
-	if (nErrCode)
-	{
-		cout << "[!] WSAStartup failed, code : " << nErrCode << endl;
-		return INVALID_SOCKET;
-	}
-
-	hSock = CreateTCPSocket();
-	
-	//int option = TRUE;
-	//setsockopt(hSock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
-	
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = inet_addr(ip);		//Connection Server IP
-	addr.sin_port = htons(csPort);					//Connection Server Port
+	addr.sin_port = htons(csPort);				//Connection Server Port
 
 	cout << "> Connecting to Connection Server("<<ip<<")..." << endl;
-	if (connect(hSock, (SOCKADDR*)&addr, sizeof(addr)) == SOCKET_ERROR)
+	if (connect(sock, (SOCKADDR*)&addr, sizeof(addr)) == SOCKET_ERROR)
 	{
 		cout << "[!]connect failed, code : " << WSAGetLastError() << endl;
 		return INVALID_SOCKET;
@@ -37,7 +31,7 @@ SOCKET SocketManager::ConnectToCS(char* ip)
 	else
 	{
 		cout << "> Connection Server(" << inet_ntoa(addr.sin_addr) << ") connected ..." << endl;
-		return hSock;
+		return sock;
 	}
 
 }
@@ -48,86 +42,66 @@ SOCKET SocketManager::CreateUDPSocket(char* ip, sockaddr_in &addr, const DWORD f
 	addr.sin_port = htons(csUDPPort);
 	addr.sin_addr.s_addr = inet_addr(ip);
 
-	SOCKET hSock = ::WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, NULL, 0, flags);
+	SOCKET sock = ::WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, NULL, 0, flags);
 
-	if (hSock == INVALID_SOCKET)
+	if (sock == INVALID_SOCKET)
 	{
 		cout << "[!] UDP WSASocket error, code : " << GetLastError() << endl;
+		exit(0);
 	}
 	else
 		cout << "**** UDP WSASocket Created ****" << endl;
 
-
-	return hSock;
+	return sock;
 }
 
 SOCKET SocketManager::CreateTCPSocket(const DWORD flags)
 {
-	SOCKET hSock = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, flags);
+	SOCKET sock = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, flags);
 
-	if (hSock == INVALID_SOCKET)
+	if (sock == INVALID_SOCKET)
 	{
 		cout << "[!] TCP WSASocket error, code : " << GetLastError() << endl;
+		exit(0);
 	}
 	else
 		cout << "**** TCP WSASocket Created ****" << endl;
 
-	return hSock;
+	return sock;
 }
 
-DWORD SocketManager::Send(SOCKET s, char* data)
+DWORD SocketManager::Send(SOCKET s, char* data, int len)
 {
 	WSABUF wsabuf;
 	wsabuf.buf = data;
-	wsabuf.len = packetSize;
+	wsabuf.len = len;
 
 	DWORD bytesSent;
 	WSASend(s, &wsabuf, 1, &bytesSent, 0, NULL, NULL);
 	return bytesSent;
 }
 
-DWORD SocketManager::SendUDP(SOCKET s, sockaddr_in addr, char* data)
+DWORD SocketManager::SendUDP(SOCKET s, sockaddr_in addr, char* data, int len)
 {
 	WSABUF wsabuf;
 	wsabuf.buf = data;
-	wsabuf.len = packetSize;
+	wsabuf.len = len;
 
 	DWORD bytesSent;
 	WSASendTo(s, &wsabuf, 1, &bytesSent, 0, reinterpret_cast<sockaddr *>(&addr), sizeof(addr), NULL, NULL);
 	return bytesSent;
 }
 
-char* SocketManager::Receive(SOCKET s) 
+int SocketManager::Receive(SOCKET s) 
 {
-	WSABUF wsabuf;
-	WSARecv(s, &wsabuf, 1, NULL, 0, NULL, NULL);
-	return wsabuf.buf;
-}
-
-char* SocketManager::MakePacket(int srcCode, Command comm, string data1, string data2)
-{
-	flatbuffers::FlatBufferBuilder builder;
-	flatbuffers::Offset<Body> body;
-	if (data1.empty() && data2.empty())
-		body = CreateBody(builder, comm, Status_NONE);
-	else if (data2.empty())
-		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data1));
-	else
-		body = CreateBody(builder, comm, Status_NONE, builder.CreateString(data1), builder.CreateString(data2));
-	builder.Finish(body);
-
-	uint8_t* buf = builder.GetBufferPointer();
-	char* b = reinterpret_cast<char*>(buf);
-	int len = builder.GetSize();
+	char* buf = new char[1];
+	int bytes = recv(s, buf, 1, 0);
 	
-	Header* h = new Header(len, PACKET_GENERATOR, srcCode, MONITORING_SERVER, 0);
-
-	char* bytes = new char[packetSize];
-	memset(bytes, 0, packetSize);
-	memcpy(bytes, h, sizeof(Header));
-	memcpy(&bytes[sizeof(Header)], b, len);
+	if (buf != nullptr) {
+		delete buf;
+	}
 	
-	delete h;
-
 	return bytes;
 }
+
+

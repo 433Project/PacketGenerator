@@ -13,11 +13,11 @@ TimeManager::~TimeManager()
 
 void TimeManager::StartTiming()
 {
-	QueryPerformanceFrequency(&g_frequency);
+	QueryPerformanceFrequency(&frequency);
 
 	cout << "***** Timing started" << endl;
 
-	if (!QueryPerformanceCounter(&g_startCounter))
+	if (!QueryPerformanceCounter(&startCounter))
 	{
 		cout << "[!] QueryPerformanceCounter error, code : " << GetLastError() << endl;
 	}
@@ -25,7 +25,7 @@ void TimeManager::StartTiming()
 
 void TimeManager::StopTiming()
 {
-	if (!QueryPerformanceCounter(&g_stopCounter))
+	if (!QueryPerformanceCounter(&stopCounter))
 	{
 		cout << "[!] QueryPerformanceCounter error, code : " << GetLastError() << endl;
 	}
@@ -33,18 +33,18 @@ void TimeManager::StopTiming()
 	cout << "***** Timing stopped" << endl;
 }
 
-void TimeManager::PrintTimings(long packets)
+void TimeManager::PrintTimings(long *packets)
 {
 	LARGE_INTEGER elapsed;
 
-	elapsed.QuadPart = (g_stopCounter.QuadPart - g_startCounter.QuadPart) / (g_frequency.QuadPart / 1000);
+	elapsed.QuadPart = (stopCounter.QuadPart - startCounter.QuadPart) / (frequency.QuadPart / 1000);
 
 	cout << "Complete in " << elapsed.QuadPart << "ms" << endl;
-	cout << "Sent " << packets << " packets" << endl;
+	cout << "Sent " << *packets << " packets" << endl;
 
 	if (elapsed.QuadPart != 0)
 	{
-		const double perSec = packets / elapsed.QuadPart * 1000.00;
+		double perSec = (*packets * 1000) / elapsed.QuadPart;
 
 		cout << perSec << " datagrams per second" << endl;
 	}

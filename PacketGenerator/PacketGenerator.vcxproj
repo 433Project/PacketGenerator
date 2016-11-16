@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="PGClient.cpp" />
     <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="lib\json\value.h" />
     <ClInclude Include="lib\json\version.h" />
     <ClInclude Include="lib\json\writer.h" />
+    <ClInclude Include="MessageManager.h" />
     <ClInclude Include="Packet_generated.h" />
     <ClInclude Include="PGClient.h" />
     <ClInclude Include="Protocol.h" />

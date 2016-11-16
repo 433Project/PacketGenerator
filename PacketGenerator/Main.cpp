@@ -14,28 +14,34 @@ int main(int argc, char* argv[])
 {
 	char* ip;
 	char* protocol;
-	//long packetsToSend;
-
+	
 	if (argc != 3) {
 		PrintUsage();
 		exit(0);
 	}
 
 	ip = argv[1];
-	
 	protocol = argv[2];
-	//packetsToSend = atol(argv[3]);
-
+	
 	PGClient* pg = new PGClient(ip);
 
+	switch (protocol[0])
+	{
+		case 't': case 'T':
+			pg->RunPacketGenerator();
+			break;
+		case 'u': case 'U':
+			pg->RunDatagramGenerator();
+			break;
+		default:
+			PrintUsage();
+			exit(0);
+	}
+
+	if(pg != nullptr)
+	{
+		delete pg;
+	}
+
 	
-
-	if (!strcmp(protocol, "t"))
-		pg->RunPacketGenerator();
-	else
-		pg->RunDatagramGenerator();
-
-	Sleep(10000); //delay for closesocket
-
-	pg->~PGClient();
 }

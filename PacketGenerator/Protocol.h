@@ -1,5 +1,5 @@
 #pragma once
-enum SrcDstType :int
+enum TERMINALTYPE :int
 {
 	MATCHING_SERVER = 0,
 	MATCHING_CLIENT,
@@ -13,13 +13,13 @@ enum SrcDstType :int
 struct Header
 {
 	int length;
-	SrcDstType srcType;
+	TERMINALTYPE srcType;
 	int srcCode;
-	SrcDstType dstType;
+	TERMINALTYPE dstType;
 	int dstCode;
 	Header() {};
 
-	Header(int len, SrcDstType srcType, int srcCode, SrcDstType dstType, int dstCode)
+	Header(int len, TERMINALTYPE srcType, int srcCode, TERMINALTYPE dstType, int dstCode)
 	{
 		this->length = len;
 		this->srcType = srcType;

@@ -11,11 +11,11 @@ public:
 	~TimeManager();
 	void StartTiming();
 	void StopTiming();
-	void PrintTimings(long packets);
+	void PrintTimings(long *packets);
 
 private:
-	LARGE_INTEGER g_frequency;
-	LARGE_INTEGER g_startCounter;
-	LARGE_INTEGER g_stopCounter;
+	LARGE_INTEGER frequency;
+	LARGE_INTEGER startCounter;
+	LARGE_INTEGER stopCounter;
 };
 
