@@ -1,9 +1,8 @@
 #include "MessageManager.h"
 
 
-MessageManager::MessageManager(int packetSize)
+MessageManager::MessageManager()
 {
-	this->packetSize = packetSize;
 }
 
 
@@ -11,7 +10,7 @@ MessageManager::~MessageManager()
 {
 }
 
-void MessageManager::MakePacket(char* bytes, COMMAND comm, string data1)
+void MessageManager::MakePacketBytes(char* bytes, int packetSize, COMMAND comm, string data1)
 {
 	flatbuffers::FlatBufferBuilder builder;
 	flatbuffers::Offset<Body> body;
@@ -32,7 +31,6 @@ void MessageManager::MakePacket(char* bytes, COMMAND comm, string data1)
 	memset(bytes, 0, packetSize);
 	memcpy(bytes, h, sizeof(Header));
 	memcpy(&bytes[sizeof(Header)], b, len);
-
 	delete h;
 }
 

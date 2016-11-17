@@ -17,11 +17,10 @@ public:
 	
 
 private:
-	SocketManager* sm;
-	MessageManager* mm;
+	SocketManager* csSock;
+	MessageManager* msg;
 	TimeManager* timer;
 
-	SOCKET connSock;
 	char* csIP;
 	bool isRunning = true;
 

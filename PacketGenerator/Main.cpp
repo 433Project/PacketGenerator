@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
 	protocol = argv[2];
 
 	PGClient* pg = new PGClient(ip);
-
 	if (pg == nullptr) 
 		exit(0);
 

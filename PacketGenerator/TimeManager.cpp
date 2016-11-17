@@ -4,6 +4,7 @@
 
 TimeManager::TimeManager()
 {
+	QueryPerformanceFrequency(&frequency);
 }
 
 
@@ -13,8 +14,6 @@ TimeManager::~TimeManager()
 
 void TimeManager::StartTiming()
 {
-	QueryPerformanceFrequency(&frequency);
-
 	cout << "***** Timing started" << endl;
 
 	if (!QueryPerformanceCounter(&startCounter))
@@ -44,7 +43,7 @@ void TimeManager::PrintTimings(long *packets)
 
 	if (elapsed.QuadPart != 0)
 	{
-		double perSec = (*packets * 1000) / elapsed.QuadPart;
+		double perSec = *packets / elapsed.QuadPart * 1000;
 
 		cout << perSec << " datagrams per second" << endl;
 	}

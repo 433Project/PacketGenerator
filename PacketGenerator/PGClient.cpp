@@ -7,35 +7,28 @@ PGClient::PGClient(char* ip)
 	PrintPGMessage();
 	csIP = ip;
 	
-	sm = new SocketManager();
-	mm = new MessageManager(packetSize);
+	csSock = new SocketManager();
+	msg = new MessageManager();
 	timer = new TimeManager();
 
-	if (sm == nullptr || mm == nullptr || timer == nullptr)
+	if (csSock == nullptr || msg == nullptr || timer == nullptr)
 	{
 		cout << "allocation fail" << endl;
 		exit(0);
 	}
 
-	connSock = sm->CreateTCPSocket();
-	sm->ConnectToCS(connSock, csIP);
-
-	while (connSock == INVALID_SOCKET) 
-	{
-		connSock = sm->ConnectToCS(connSock, csIP);
-	}
+	if (!csSock->ConnectServer(csIP))
+		exit(0);
 }
 
 PGClient::~PGClient()
 {
-	if(connSock != INVALID_SOCKET)
-		closesocket(connSock);
 	
-	if (sm != nullptr) 
-		delete sm;
+	if (csSock != nullptr) 
+		delete csSock;
 	
-	if (mm != nullptr)
-		delete mm;
+	if (msg != nullptr)
+		delete msg;
 		
 	if (timer != nullptr)
 		delete timer;
@@ -56,44 +49,41 @@ void PGClient::RunPacketGenerator(bool proto)
 	long total = 0;
 	
 	char* data = new char[packetSize];
-	mm->MakePacket(data, COMMAND_PG_START, "");
-	sm->Send(connSock, data, packetSize);
+	msg->MakePacketBytes(data, packetSize, COMMAND_PG_START, "");
+	csSock->Send(data, packetSize);
 	
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_DUMMY, "");
+	msg->MakePacketBytes(data, packetSize, COMMAND_PG_DUMMY, "");
 	
 	if (proto)
 	{
 		timer->StartTiming();
 		while (!_kbhit())
 		{
-			sm->Send(connSock, data, packetSize);
+			csSock->Send(data, packetSize);
 			total++;
 		}
 	}
 	else
 	{
-		sockaddr_in addr;
-		SOCKET s = sm->CreateUDPSocket(csIP, addr);
-
 		timer->StartTiming();
-		while (!_kbhit())
+		while (csSock->CreateUDPSocket(csIP) && !_kbhit())
 		{
-			sm->SendUDP(s, addr, data, packetSize);
+			csSock->SendUDP(data, packetSize);
 			total++;
 		}
 	}
 	cout << "> stop sending packets" << endl;
 	
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_END, to_string(total));
-	sm->Send(connSock, data, packetSize);
+	msg->MakePacketBytes(data, packetSize, COMMAND_PG_END, to_string(total));
+	csSock->Send(data, packetSize);
 
-	shutdown(connSock, SD_SEND);
+	csSock->Shutdown();
 
 	while (true) 
 	{
-		if (!sm->Receive(connSock))
+		if (!csSock->Receive())
 			break;
 	}
 

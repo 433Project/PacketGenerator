@@ -10,11 +10,9 @@ using namespace std;
 class MessageManager
 {
 public:
-	MessageManager(int p);
+	MessageManager();
 	~MessageManager();
-	void MakePacket(char* bytes, COMMAND comm, string data1);
+	void MakePacketBytes(char* bytes, int len, COMMAND comm, string data);
 
-private:
-	int packetSize;
 };
 
