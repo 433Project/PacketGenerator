@@ -19,7 +19,9 @@ PGClient::PGClient(char* ip)
 
 	connSock = sm->CreateTCPSocket();
 	sm->ConnectToCS(connSock, csIP);
-	while (connSock == INVALID_SOCKET) {
+
+	while (connSock == INVALID_SOCKET) 
+	{
 		connSock = sm->ConnectToCS(connSock, csIP);
 	}
 	
@@ -53,17 +55,12 @@ void PGClient::PrintPGMessage()
 void PGClient::RunPacketGenerator(bool proto)
 {
 	long total = 0;
+	
 	char* data = new char[packetSize];
 	mm->MakePacket(data, COMMAND_PG_START, "");
 	sm->Send(connSock, data, packetSize);
 	
-	if (data != nullptr) 
-	{
-		delete data;
-		data = nullptr;
-	}
-
-	data = new char[packetSize];
+	memset(data, 0, packetSize);
 	mm->MakePacket(data, COMMAND_PG_DUMMY, "");
 	
 	if (proto)
@@ -88,7 +85,8 @@ void PGClient::RunPacketGenerator(bool proto)
 		}
 	}
 	cout << "> stop sending packets" << endl;
-	data = new char[packetSize];
+	
+	memset(data, 0, packetSize);
 	mm->MakePacket(data, COMMAND_PG_END, to_string(total));
 	sm->Send(connSock, data, packetSize);
 
@@ -101,12 +99,6 @@ void PGClient::RunPacketGenerator(bool proto)
 	}
 
 	timer->StopTiming();
-
-	if (data != nullptr) {
-		delete data;
-		data = nullptr;
-	}
-
 	timer->PrintTimings(&total);
 	
 	if (data != nullptr) {
