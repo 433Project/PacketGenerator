@@ -17,7 +17,6 @@ struct Header
 	int srcCode;
 	TERMINALTYPE dstType;
 	int dstCode;
-	Header() {};
 
 	Header(int len, TERMINALTYPE srcType, int srcCode, TERMINALTYPE dstType, int dstCode)
 	{
@@ -27,10 +26,4 @@ struct Header
 		this->dstType = dstType;
 		this->dstCode = dstCode;
 	}
-};
-
-struct UserInfo
-{
-	int	ID;
-	int	metric;
 };
