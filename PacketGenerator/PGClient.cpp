@@ -24,7 +24,6 @@ PGClient::PGClient(char* ip)
 	{
 		connSock = sm->ConnectToCS(connSock, csIP);
 	}
-	
 }
 
 PGClient::~PGClient()
