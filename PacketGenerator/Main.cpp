@@ -1,4 +1,5 @@
 #include "PGClient.h"
+#include "MessageManager.h"
 
 void PrintUsage()
 {
@@ -14,7 +15,7 @@ int main(int argc, char* argv[])
 {
 	char* ip;
 	char* protocol;
-	
+
 	if (argc != 3) {
 		PrintUsage();
 		exit(0);
@@ -22,16 +23,19 @@ int main(int argc, char* argv[])
 
 	ip = argv[1];
 	protocol = argv[2];
-	
+
 	PGClient* pg = new PGClient(ip);
+
+	if (pg == nullptr) 
+		exit(0);
 
 	switch (protocol[0])
 	{
 		case 't': case 'T':
-			pg->RunPacketGenerator();
+			pg->RunPacketGenerator(true);
 			break;
 		case 'u': case 'U':
-			pg->RunDatagramGenerator();
+			pg->RunPacketGenerator(false);
 			break;
 		default:
 			PrintUsage();

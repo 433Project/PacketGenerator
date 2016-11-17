@@ -35,3 +35,11 @@ void MessageManager::MakePacket(char* bytes, COMMAND comm, string data1)
 
 	delete h;
 }
+
+/*
+void MessageManager::printLog(char* className, char* funcName, char* msg)
+{
+	cout << "=================================" << endl;
+	cout << "[" << className << "][" << funcName << "] " << msg << endl;;
+	cout << "=================================" << endl;
+}*/
