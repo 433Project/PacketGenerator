@@ -31,6 +31,11 @@
 #include <algorithm>
 #include <memory>
 
+#ifndef NOMINMAX
+#define min(x,y) ((x) < (y) ? (x) : (y))
+#define max(x,y) ((x) > (y) ? (x) : (y))
+#endif
+
 #ifdef _STLPORT_VERSION
   #define FLATBUFFERS_CPP98_STL
 #endif

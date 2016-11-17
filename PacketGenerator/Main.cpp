@@ -28,12 +28,25 @@ int main(int argc, char* argv[])
 	packetsToSend = atol(argv[3]);
 
 	PGClient* pg = new PGClient(ip);
-	if (!strcmp(protocol, "t"))
+	
+	if (pg == nullptr)
+		exit(0);
+
+	switch (protocol[0])
+	{
+	case 't': case 'T':
 		pg->RunPacketGenerator(packetsToSend);
-	else
+		break;
+	case 'u': case 'U':
 		pg->RunDatagramGenerator(packetsToSend);
+		break;
+	default:
+		PrintUsage();
+		exit(0);
+	}
 
-	Sleep(10000); //delay for closesocket
-
-	delete pg;
+	if (pg != nullptr)
+	{
+		delete pg;
+	}
 }
