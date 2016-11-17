@@ -66,7 +66,7 @@ void PGClient::RunPacketGenerator(bool proto)
 	if (proto)
 	{
 		timer->StartTiming();
-		while (!kbhit())
+		while (!_kbhit())
 		{
 			sm->Send(connSock, data, packetSize);
 			total++;
@@ -78,7 +78,7 @@ void PGClient::RunPacketGenerator(bool proto)
 		SOCKET s = sm->CreateUDPSocket(csIP, addr);
 
 		timer->StartTiming();
-		while (!kbhit())
+		while (!_kbhit())
 		{
 			sm->SendUDP(s, addr, data, packetSize);
 			total++;

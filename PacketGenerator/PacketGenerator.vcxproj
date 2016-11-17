@@ -137,7 +137,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Yungyung\Documents\Visual Studio 2015\Projects\PacketGenerator\PacketGenerator\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,17 +166,6 @@
     <ClInclude Include="lib\flatbuffers\reflection.h" />
     <ClInclude Include="lib\flatbuffers\reflection_generated.h" />
     <ClInclude Include="lib\flatbuffers\util.h" />
-    <ClInclude Include="lib\json\allocator.h" />
-    <ClInclude Include="lib\json\assertions.h" />
-    <ClInclude Include="lib\json\autolink.h" />
-    <ClInclude Include="lib\json\config.h" />
-    <ClInclude Include="lib\json\features.h" />
-    <ClInclude Include="lib\json\forwards.h" />
-    <ClInclude Include="lib\json\json.h" />
-    <ClInclude Include="lib\json\reader.h" />
-    <ClInclude Include="lib\json\value.h" />
-    <ClInclude Include="lib\json\version.h" />
-    <ClInclude Include="lib\json\writer.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="Packet_generated.h" />
     <ClInclude Include="PGClient.h" />

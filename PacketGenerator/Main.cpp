@@ -3,12 +3,10 @@
 
 void PrintUsage()
 {
-	cout << "Useage : PacketGenerator <IP> <Protocol> <count>" << endl;
+	cout << "Useage : PacketGenerator <IP> <Protocol>" << endl;
 	cout << "<Protocol>" << endl;
 	cout << "	t : tcp, default" << endl;
 	cout << "	u : udp" << endl;
-	cout << "<Count>" << endl;
-	cout << "	How many do you want to send?" << endl;
 }
 
 int main(int argc, char* argv[])

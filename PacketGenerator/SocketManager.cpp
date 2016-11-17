@@ -1,5 +1,4 @@
 #include "SocketManager.h"
-#include <json/json.h>
 
 SocketManager::SocketManager()
 {
