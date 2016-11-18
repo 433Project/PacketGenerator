@@ -32,6 +32,8 @@ int main(int argc, char* argv[])
 	if (pg == nullptr)
 		exit(0);
 
+	Sleep(10000);
+
 	switch (protocol[0])
 	{
 	case 't': case 'T':

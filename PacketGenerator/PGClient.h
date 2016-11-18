@@ -2,6 +2,7 @@
 #include "SocketManager.h"
 #include "MessageManager.h"
 #include "TimeManager.h"
+#include <string>
 #pragma comment(lib, "ws2_32.lib")
 using namespace std;
 
@@ -15,13 +16,11 @@ public:
 	void RunDatagramGenerator(int total);
 
 private:
-	SocketManager* sm;
-	MessageManager* mm;
+	SocketManager* csSock;
+	MessageManager* msg;
 	TimeManager* timer;
 
-	SOCKET connSock;
 	char* csIP;
-	
 	int packetSize = 100;
 };
 

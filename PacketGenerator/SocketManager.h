@@ -11,19 +11,25 @@ class SocketManager
 public:
 	SocketManager();
 	~SocketManager();
-	SOCKET ConnectToCS(SOCKET sock, char* ip);
-	SOCKET CreateUDPSocket(char* ip, sockaddr_in &addr, const DWORD flags = 0);
-	SOCKET CreateTCPSocket(const DWORD flags = 0);
-	DWORD Send(SOCKET s, char* buf, int len);
-	DWORD SendUDP(SOCKET s, sockaddr_in addr, char* data, int len);
-	int SocketManager::Receive(SOCKET s);
 
+	bool ConnectServer(char* ip);
+	bool CreateUDPSocket(char* ip, const DWORD flags = 0);
+	bool CreateTCPSocket(const DWORD flags = 0);
 
+	DWORD Send(char* buf, int len);
+	DWORD SendUDP(char* data, int len);
+
+	int Receive();
+	void Shutdown();
 
 private:
 	WSADATA wsd;
-	SOCKET sock;
-	SOCKADDR_IN addr;
+
+	SOCKET sockTCP;
+	SOCKET sockUDP;
+
+	SOCKADDR_IN addrTCP;
+	SOCKADDR_IN addrUDP;
 
 	int csPort = 10433;
 	int csUDPPort = 5050;

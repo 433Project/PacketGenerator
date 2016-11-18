@@ -5,35 +5,28 @@ PGClient::PGClient(char* ip)
 	PrintPGMessage();
 	csIP = ip;
 
-	sm = new SocketManager();
-	mm = new MessageManager(packetSize);
+	csSock = new SocketManager();
+	msg = new MessageManager(packetSize);
 	timer = new TimeManager();
 
-	if (sm == nullptr || mm == nullptr || timer == nullptr)
+	if (csSock == nullptr || msg == nullptr || timer == nullptr)
 	{
 		cout << "allocation fail" << endl;
 		exit(0);
 	}
 
-	connSock = sm->CreateTCPSocket();
-	sm->ConnectToCS(connSock, csIP);
+	if (!csSock->ConnectServer(csIP))
+		exit(0);
 
-	while (connSock == INVALID_SOCKET)
-	{
-		connSock = sm->ConnectToCS(connSock, csIP);
-	}
 }
 
 PGClient::~PGClient()
 {
-	if (connSock != INVALID_SOCKET)
-		closesocket(connSock);
+	if (csSock != nullptr)
+		delete csSock;
 
-	if (sm != nullptr)
-		delete sm;
-
-	if (mm != nullptr)
-		delete mm;
+	if (msg != nullptr)
+		delete msg;
 
 	if (timer != nullptr)
 		delete timer;
@@ -46,34 +39,33 @@ void PGClient::PrintPGMessage()
 	cout << "##################### Packet Generator ######################" << endl;
 	cout << "#####################==================######################" << endl;
 	cout << "#############################################################" << endl;
-	cout << "IF YOU WANT TO STOP, PRESS ANY KEY...." << endl;
 }
 
 void PGClient::RunPacketGenerator(int total)
 {
 	char* data = new char[packetSize];
 	
-	mm->MakePacket(data, COMMAND_PG_START, to_string(total));
-	sm->Send(connSock, data, packetSize);
+	msg->MakePacket(data, COMMAND_PG_START, to_string(total));
+	csSock->Send(data, packetSize);
 
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_DUMMY, "");
+	msg->MakePacket(data, COMMAND_PG_DUMMY, "");
 	
 	timer->StartTiming();
 	for (long i = 0; i < total; i++)
 	{
-		sm->Send(connSock, data, packetSize);
+		csSock->Send(data, packetSize);
 	}
 
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_DUMMY, "");
-	sm->Send(connSock, data, packetSize);
-
-	shutdown(connSock, SD_SEND);
+	msg->MakePacket(data, COMMAND_PG_DUMMY, "");
+	csSock->Send(data, packetSize);
+	cout << "> sent all" << endl;
+	csSock->Shutdown();
 
 	while (true)
 	{
-		if (!sm->Receive(connSock))
+		if (!csSock->Receive())
 			break;
 	}
 
@@ -89,30 +81,30 @@ void PGClient::RunDatagramGenerator(int total)
 {
 
 	sockaddr_in addr;
-	SOCKET s = sm->CreateUDPSocket(csIP, addr);
+	SOCKET s = csSock->CreateUDPSocket(csIP);
 	
 	char* data = new char[packetSize];
-	mm->MakePacket(data, COMMAND_PG_START, to_string(total));
-	sm->Send(connSock, data, packetSize);
+	msg->MakePacket(data, COMMAND_PG_START, to_string(total));
+	csSock->Send(data, packetSize);
 
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_DUMMY, "");
+	msg->MakePacket(data, COMMAND_PG_DUMMY, "");
 	
 	timer->StartTiming();
 	for (long i = 0; i < total; ++i)
 	{
-		sm->SendUDP(s, addr, data, packetSize);
+		csSock->SendUDP(data, packetSize);
 	}
 
 	memset(data, 0, packetSize);
-	mm->MakePacket(data, COMMAND_PG_END, "");
-	sm->Send(connSock, data, packetSize);
-
-	shutdown(connSock, SD_SEND);
+	msg->MakePacket(data, COMMAND_PG_END, "");
+	csSock->Send(data, packetSize);
+	cout << "> sent all" << endl;
+	csSock->Shutdown();
 
 	while (true)
 	{
-		if (!sm->Receive(connSock))
+		if (!csSock->Receive())
 			break;
 	}
 
