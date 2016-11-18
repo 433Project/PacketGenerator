@@ -43,8 +43,7 @@ void TimeManager::PrintTimings(long *packets)
 
 	if (elapsed.QuadPart != 0)
 	{
-		double perSec = *packets / elapsed.QuadPart * 1000;
-
+		double perSec = *packets / (elapsed.QuadPart / 1000);
 		cout << perSec << " datagrams per second" << endl;
 	}
 }
