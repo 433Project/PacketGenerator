@@ -27,28 +27,29 @@ int main(int argc, char* argv[])
 	protocol = argv[2];
 	packetsToSend = atol(argv[3]);
 
-	PGClient* pg = new PGClient(ip);
-	
-	if (pg == nullptr)
-		exit(0);
-
-	Sleep(10000);
-
-	switch (protocol[0])
+	while (true)
 	{
-	case 't': case 'T':
-		pg->RunPacketGenerator(packetsToSend);
-		break;
-	case 'u': case 'U':
-		pg->RunDatagramGenerator(packetsToSend);
-		break;
-	default:
-		PrintUsage();
-		exit(0);
-	}
+		PGClient* pg = new PGClient(ip);
 
-	if (pg != nullptr)
-	{
-		delete pg;
+		if (pg == nullptr)
+			exit(0);
+
+		switch (protocol[0])
+		{
+		case 't': case 'T':
+			pg->RunPacketGenerator(packetsToSend);
+			break;
+		case 'u': case 'U':
+			pg->RunDatagramGenerator(packetsToSend);
+			break;
+		default:
+			PrintUsage();
+			exit(0);
+		}
+
+		if (pg != nullptr)
+		{
+			delete pg;
+		}
 	}
 }
