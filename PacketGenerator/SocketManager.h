@@ -23,8 +23,6 @@ public:
 	void Shutdown();
 
 private:
-	WSADATA wsd;
-
 	SOCKET sockTCP;
 	SOCKET sockUDP;
 

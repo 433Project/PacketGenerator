@@ -155,6 +155,7 @@
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Packet.fbs">
       <FileType>CppHeader</FileType>
     </None>

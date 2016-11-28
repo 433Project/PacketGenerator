@@ -41,7 +41,7 @@ void TimeManager::PrintTimings(long *packets)
 	cout << "Complete in " << elapsed.QuadPart << "ms" << endl;
 	cout << "Sent " << *packets << " packets" << endl;
 
-	if (elapsed.QuadPart != 0)
+	if (elapsed.QuadPart / 1000 != 0)
 	{
 		double perSec = *packets / (elapsed.QuadPart / 1000);
 		cout << perSec << " datagrams per second" << endl;

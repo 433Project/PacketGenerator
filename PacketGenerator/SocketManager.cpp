@@ -2,6 +2,7 @@
 
 SocketManager::SocketManager()
 {
+	WSADATA wsd;
 	int nErrCode = WSAStartup(MAKEWORD(2, 2), &wsd);
 	if (nErrCode)
 	{
